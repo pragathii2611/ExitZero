@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExitZero | The Proof-of-Work Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; color: #334155; -webkit-font-smoothing: antialiased; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .animate-fade-up { animation: fadeUp 0.6s ease-out forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Markdown Styles */
+        .prose p { margin-bottom: 1rem; line-height: 1.7; color: #475569; }
+        .prose h2 { color: #0f172a; font-weight: 700; font-size: 1.5rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .prose h3 { color: #0f172a; font-weight: 600; font-size: 1.25rem; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        .prose li { margin-bottom: 0.5rem; color: #334155; }
+        .prose strong { color: #0f172a; font-weight: 600; }
+    </style>
+</head>
+<body class="selection:bg-emerald-100 selection:text-emerald-900">
+
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200/60 transition-all">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-3 group">
+                <img src="/static/logo.png" alt="ExitZero" class="w-10 h-10 object-cover rounded-lg shadow-sm border border-slate-100 group-hover:scale-105 transition-transform">
+                <span class="text-xl font-bold tracking-tight text-slate-900">ExitZero</span>
+            </a>
+            <div class="hidden md:flex gap-8 text-sm font-semibold text-slate-500">
+                <a href="/how-it-works" class="hover:text-slate-900 transition">How it Works</a>
+                <a href="/pricing" class="hover:text-slate-900 transition">Pricing</a>
+            </div>
+            <div class="flex gap-4">
+                <a href="/dashboard" id="dashboardBtn" class="hidden text-sm font-semibold text-slate-900 py-2.5">My Workspace</a>
+                <a href="#" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold px-5 py-2.5 rounded-lg transition shadow-lg shadow-slate-900/10 hover:shadow-slate-900/20 transform hover:-translate-y-0.5">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="pt-40 pb-20 px-6 bg-gradient-to-b from-slate-50 to-white">
+        <div class="max-w-4xl mx-auto text-center space-y-8 animate-fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wide">
+                
+                
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1]">
+                Credentials are generic.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Artifacts are forever.</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
+                Generate a technical "Proof of Work" strategy tailored to your dream job description. Skip the resume pile.
+            </p>
+
+            <div class="mt-12 bg-white p-2 rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-200 transform transition-all hover:scale-[1.005]">
+                <div class="bg-slate-50/50 rounded-2xl border border-slate-100 relative group">
+                    <div class="absolute top-4 right-4 text-xs font-bold text-slate-300 group-focus-within:text-emerald-500 transition-colors">AI READY</div>
+                    <textarea id="jdInput" class="w-full h-48 p-6 text-lg text-slate-800 bg-transparent placeholder-slate-400 focus:outline-none resize-none leading-relaxed" placeholder="Paste the Job Description here (e.g. Senior Frontend Engineer at Airbnb)..."></textarea>
+                </div>
+                
+                <div class="p-2 mt-2">
+                    <button onclick="generateProject(false)" class="w-full bg-slate-900 hover:bg-black text-white text-lg font-bold py-4 rounded-xl transition-all shadow-xl shadow-slate-900/20 flex justify-center items-center gap-3 hover:shadow-2xl hover:-translate-y-1">
+                        <span id="btnText">Generate Strategy Blueprint</span>
+                        <svg id="loadingSpinner" class="hidden w-5 h-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resultSection" class="hidden w-full bg-slate-50 border-t border-slate-200 py-20 px-6">
+        <div class="max-w-5xl mx-auto space-y-8">
+            
+            <div class="flex flex-col md:flex-row justify-between items-end gap-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-900">Strategy Blueprint</h2>
+                    <p class="text-slate-500 mt-2">Generated for: <span class="font-semibold text-slate-900">Candidate</span></p>
+                </div>
+                <button onclick="generateProject(true)" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold text-slate-600 shadow-sm hover:text-slate-900 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Regenerate Idea
+                </button>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 overflow-hidden relative">
+                
+                <div id="regenOverlay" class="hidden absolute inset-0 bg-white/90 z-20 flex items-center justify-center backdrop-blur-sm">
+                    <div class="flex flex-col items-center gap-3">
+                        <svg class="w-8 h-8 animate-spin text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span class="font-bold text-slate-900 text-lg">Architecting new solution...</span>
+                    </div>
+                </div>
+
+                <div class="p-8 md:p-12 border-b border-slate-100">
+                    <div class="flex flex-wrap gap-3 mb-6">
+                        <span id="difficultyBadge" class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-emerald-100">Intermediate</span>
+                        <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wide border border-blue-100">Proof of Work</span>
+                    </div>
+                    <h2 id="projectTitle" class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Project Title Loading...</h2>
+                    <p id="projectTagline" class="text-xl text-slate-500 leading-relaxed">Tagline loading...</p>
+                    <div id="techStackContainer" class="mt-8 flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="bg-slate-50/50 p-8 md:p-12 relative">
+                    <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-4">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Blueprint Preview</span>
+                    </div>
+
+                    <div class="max-w-none prose prose-lg prose-slate max-h-[1000px] overflow-hidden relative transition-all" id="readmeContent">
+                        </div>
+
+                    <div class="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-slate-50 via-slate-50/90 to-transparent z-10"></div>
+                    
+                    <div class="relative z-20 -mt-20 flex justify-center pb-8">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-xl max-w-lg w-full text-center">
+                            
+                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Premium Assets Locked</h3>
+                            <p class="text-slate-500 text-sm mb-6">Unlock the Technical Architecture, Folder Structure, and Hiring Manager Scripts.</p>
+
+                            <div class="space-y-3 mb-8 text-left bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <div class="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Technical Architecture Diagrams
+                                </div>
+                                <div class="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Custom Boilerplate Code (.zip)
+                                </div>
+                                <div class="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Recruiter "Cold DM" Scripts
+                                </div>
+                            </div>
+
+                            <button id="downloadBtn" onclick="downloadStarterKit()" class="w-full bg-slate-900 hover:bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex justify-center items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
+                                Unlock Starter Kit ($2.99)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-12 bg-white border-t border-slate-100 mt-auto">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 opacity-75">
+                <img src="/static/logo.png" class="w-6 h-6 object-cover rounded grayscale">
+                <span class="text-slate-900 font-bold text-sm">ExitZero Inc.</span>
+            </div>
+            <div class="flex gap-6 text-sm font-medium text-slate-500">
+                <a href="/contact" class="hover:text-slate-900 transition">Contact</a>
+                <a href="/privacy" class="hover:text-slate-900 transition">Privacy</a>
+                <a href="/terms" class="hover:text-slate-900 transition">Terms</a>
+            </div>
+            <div class="text-slate-400 text-sm">
+                &copy; 2025 All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.lastGeneratedData = null;
+
+        // Check for existing history to show dashboard link
+        if (localStorage.getItem('exitZeroProjects')) {
+            document.getElementById('dashboardBtn').classList.remove('hidden');
+        }
+
+        async function generateProject(isRegen = false) {
+            const jd = document.getElementById('jdInput').value;
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+            const resultSection = document.getElementById('resultSection');
+            const regenOverlay = document.getElementById('regenOverlay');
+
+            if(!jd || jd.length < 10) return alert("Please enter a valid Job Description.");
+
+            if (!isRegen) {
+                btnText.innerText = "Analyzing Requirements...";
+                spinner.classList.remove('hidden');
+            } else {
+                regenOverlay.classList.remove('hidden');
+            }
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ jd_text: jd, regenerate: isRegen })
+                });
+
+                const data = await response.json();
+                if(data.error) throw new Error(data.error);
+
+                window.lastGeneratedData = data;
+
+                document.getElementById('projectTitle').innerText = data.title;
+                document.getElementById('projectTagline').innerText = data.tagline;
+                document.getElementById('difficultyBadge').innerText = data.difficulty;
+                
+                // Show content (CSS handles the cut-off)
+                document.getElementById('readmeContent').innerHTML = marked.parse(data.readme_content);
+
+                const stackContainer = document.getElementById('techStackContainer');
+                stackContainer.innerHTML = '';
+                const techs = data.tech_stack.split(/[•,]/); 
+                techs.forEach(tech => {
+                    const badge = document.createElement('span');
+                    badge.className = "bg-slate-100 text-slate-700 text-sm font-semibold px-4 py-2 rounded-lg border border-slate-200";
+                    badge.innerText = tech.trim();
+                    stackContainer.appendChild(badge);
+                });
+
+                if (!isRegen) {
+                    resultSection.classList.remove('hidden');
+                    resultSection.classList.add('animate-fade-up');
+                    setTimeout(() => resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                } else {
+                    regenOverlay.classList.add('hidden');
+                }
+
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btnText.innerText = "Generate Strategy Blueprint";
+                spinner.classList.add('hidden');
+                regenOverlay.classList.add('hidden');
+            }
+        }
+
+        async function downloadStarterKit() {
+            if (!window.lastGeneratedData) return alert("Generate a project first!");
+            
+            // --- PERSISTENCE LOGIC START ---
+            let history = JSON.parse(localStorage.getItem('exitZeroProjects')) || [];
+            
+            const newProject = {
+                ...window.lastGeneratedData,
+                date: new Date().toISOString()
+            };
+            
+            // Add to history
+            history.unshift(newProject);
+            localStorage.setItem('exitZeroProjects', JSON.stringify(history));
+            // --- PERSISTENCE LOGIC END ---
+
+            const btn = document.getElementById('downloadBtn');
+            btn.innerHTML = `
+                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                Redirecting to Secure Checkout...
+            `;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            window.location.href = "https://exitzero.lemonsqueezy.com/buy/4f4063ac-bed4-4b39-82a1-a121922748ce";
+        }
+    </script>
+</body>
+</html>
