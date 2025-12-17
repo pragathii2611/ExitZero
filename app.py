@@ -7,27 +7,18 @@ import google.generativeai as genai
 from flask import Flask, render_template, request, jsonify, send_file
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
 api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    print("❌ ERROR: GEMINI_API_KEY not found in .env file")
-
 genai.configure(api_key=api_key)
 
-# Configure JSON Mode (Prevents the "Bad JSON" crashes)
 json_config = { "response_mime_type": "application/json" }
-model = genai.GenerativeModel(
-    'models/gemini-1.5-flash',
-    generation_config=json_config
-)
+model = genai.GenerativeModel('models/gemini-2.5-flash', generation_config=json_config)
 
 # --- PROMPTS ---
-# Note: Curly braces are doubled {{ }} to prevent Python format errors
 STRATEGY_PROMPT = """
 You are a Senior Staff Engineer. Analyze the Job Description (JD).
 1. Identify critical skills.
@@ -40,120 +31,95 @@ JSON Schema:
   "tagline": "Pitch.",
   "difficulty": "Intermediate",
   "tech_stack": "Tech 1 • Tech 2",
-  "readme_content": "## Introduction\\n[Short Summary Only]...\\n\\n## Key Features\\n- Feature 1\\n- Feature 2"
+  "readme_content": "## Introduction\\n[Short Summary]...\\n\\n## Key Features\\n- Feature 1"
 }
 """
 
+# NEW PROMPT: Generates the "Premium Assets" inside the Zip
 CODE_GEN_PROMPT = """
-You are a DevOps Engineer. Generate the STARTER CODE for this project.
+You are a DevOps Engineer. Generate the STARTER KIT for this project.
 Project: {title}
 Stack: {stack}
 
 Return JSON where KEYS are filenames and VALUES are file content.
-Include:
-1. README.md (Full details)
-2. requirements.txt (Dependencies)
-3. main_entry_file (e.g. app.py or App.js)
-4. recruiter_dm.txt (LinkedIn script)
+You MUST include these specific files:
+
+1. README.md (Technical setup guide)
+2. INTERVIEW_PREP.md (5 tough questions a recruiter will ask about this specific project and the perfect answers)
+3. LINKEDIN_POST.txt (A viral, professional post announcing this project to get recruiter attention)
+4. requirements.txt (Dependencies)
+5. main.py (or App.js - the entry point code)
 
 JSON Schema:
 {{
-  "README.md": "# Title\\n\\n...",
-  "requirements.txt": "package1\\npackage2",
-  "app.py": "print('Hello World')",
-  "recruiter_dm.txt": "Hi [Name]..."
+  "README.md": "# Setup Guide...",
+  "INTERVIEW_PREP.md": "# Interview Cheat Sheet...",
+  "LINKEDIN_POST.txt": "🚀 Just built...",
+  "requirements.txt": "flask",
+  "main.py": "print('Hello')"
 }}
 """
 
-# --- PAGE ROUTES (THE FIX IS HERE) ---
+# --- ROUTES ---
 @app.route('/')
-def home():
-    return render_template('index.html')
+def home(): return render_template('index.html')
 
 @app.route('/how-it-works')
-def how_it_works():
-    return render_template('how_it_works.html')
+def how_it_works(): return render_template('how_it_works.html')
 
 @app.route('/pricing')
-def pricing():
-    return render_template('pricing.html')
-
-@app.route('/dashboard')  # <--- THIS WAS LIKELY MISSING
-def dashboard():
-    return render_template('dashboard.html')
+def pricing(): return render_template('pricing.html')
 
 @app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
+def privacy(): return render_template('privacy.html')
 
 @app.route('/terms')
-def terms():
-    return render_template('terms.html')
+def terms(): return render_template('terms.html')
 
 @app.route('/contact')
-def contact():
-    return render_template('contact.html')
+def contact(): return render_template('contact.html')
 
-# --- API ROUTES ---
+# NEW: Simple Success Page instead of Dashboard
+@app.route('/success')
+def success():
+    return render_template('success.html')
+
+# --- API ---
 @app.route('/generate', methods=['POST'])
 def generate_project():
     data = request.json
-    jd_text = data.get('jd_text', '')
-
-    if not jd_text or len(jd_text) < 10:
-        return jsonify({"error": "Job Description is too short."}), 400
-
     try:
-        full_prompt = f"{STRATEGY_PROMPT}\n\nJOB DESCRIPTION:\n{jd_text}"
-        
-        if data.get('regenerate'):
-            full_prompt += "\n\nIMPORTANT: Generate a DIFFERENT project idea than before."
-
+        full_prompt = f"{STRATEGY_PROMPT}\n\nJOB DESCRIPTION:\n{data.get('jd_text', '')}"
         response = model.generate_content(full_prompt)
-        project_data = json.loads(response.text)
-        return jsonify(project_data), 200
-
+        return jsonify(json.loads(response.text)), 200
     except Exception as e:
-        print(f"❌ Generate Error: {e}")
-        return jsonify({"error": "AI Error. Please try again."}), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download-kit', methods=['POST'])
 def download_kit():
     data = request.json
-    title = data.get('title')
-    stack = data.get('tech_stack')
-
-    if not title:
-        return jsonify({"error": "Missing project data"}), 400
-
     try:
-        prompt = CODE_GEN_PROMPT.format(title=title, stack=stack)
-        
+        # Generate the Enhanced Zip content
+        prompt = CODE_GEN_PROMPT.format(title=data.get('title'), stack=data.get('tech_stack'))
         response = model.generate_content(prompt)
-        files_json = json.loads(response.text)
+        files = json.loads(response.text)
 
         memory_file = io.BytesIO()
         with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-            for filename, content in files_json.items():
-                clean_name = filename.strip().replace('/', '_').replace('\\', '_')
-                zf.writestr(clean_name, content)
+            for name, content in files.items():
+                zf.writestr(name, content)
 
         memory_file.seek(0)
+        safe_name = re.sub(r'[^a-zA-Z0-9]', '_', data.get('title')).lower()
         
-        safe_filename = re.sub(r'[^a-zA-Z0-9]', '_', title).lower()
         return send_file(
             memory_file,
             mimetype='application/zip',
             as_attachment=True,
-            download_name=f"{safe_filename}_starter_kit.zip"
+            download_name=f"{safe_name}_kit.zip"
         )
-
     except Exception as e:
-        print(f"❌ Zip Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": "Could not build the starter kit."}), 500
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # Running on port 8000 to match your Lemon Squeezy settings
     app.run(debug=True, port=8000)
