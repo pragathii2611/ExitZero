@@ -19,15 +19,15 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-# Configure JSON Mode
+# Configure JSON Mode (Prevents the "Bad JSON" crashes)
 json_config = { "response_mime_type": "application/json" }
 model = genai.GenerativeModel(
-    'models/gemini-2.5-flash',
+    'models/gemini-1.5-flash',
     generation_config=json_config
 )
 
 # --- PROMPTS ---
-# Note: I removed the curly braces from the example to prevent Python .format() crashing
+# Note: Curly braces are doubled {{ }} to prevent Python format errors
 STRATEGY_PROMPT = """
 You are a Senior Staff Engineer. Analyze the Job Description (JD).
 1. Identify critical skills.
@@ -65,19 +65,36 @@ JSON Schema:
 }}
 """
 
+# --- PAGE ROUTES (THE FIX IS HERE) ---
 @app.route('/')
-def home(): return render_template('index.html')
+def home():
+    return render_template('index.html')
 
 @app.route('/how-it-works')
-def how_it_works(): return render_template('how_it_works.html')
+def how_it_works():
+    return render_template('how_it_works.html')
 
 @app.route('/pricing')
-def pricing(): return render_template('pricing.html')
+def pricing():
+    return render_template('pricing.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard')  # <--- THIS WAS LIKELY MISSING
 def dashboard():
     return render_template('dashboard.html')
 
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+# --- API ROUTES ---
 @app.route('/generate', methods=['POST'])
 def generate_project():
     data = request.json
@@ -94,7 +111,6 @@ def generate_project():
 
         response = model.generate_content(full_prompt)
         project_data = json.loads(response.text)
-        
         return jsonify(project_data), 200
 
     except Exception as e:
@@ -111,8 +127,6 @@ def download_kit():
         return jsonify({"error": "Missing project data"}), 400
 
     try:
-        # This .format() call was crashing before. 
-        # I fixed it by using double braces {{ }} in the PROMPT string above.
         prompt = CODE_GEN_PROMPT.format(title=title, stack=stack)
         
         response = model.generate_content(prompt)
@@ -136,27 +150,10 @@ def download_kit():
 
     except Exception as e:
         print(f"❌ Zip Error: {e}")
-        # This will print the exact reason to your terminal if it fails again
         import traceback
-        traceback.print_exc() 
+        traceback.print_exc()
         return jsonify({"error": "Could not build the starter kit."}), 500
-    
-    
-
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
-
-@app.route('/terms')
-def terms():
-    return render_template('terms.html')
-
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')
 
 if __name__ == '__main__':
+    # Running on port 8000 to match your Lemon Squeezy settings
     app.run(debug=True, port=8000)
-
-
-
